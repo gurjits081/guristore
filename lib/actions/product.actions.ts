@@ -15,7 +15,22 @@ export async function getLatestProducts() {
   } catch (error) {
     console.log("Error fetching latest products:", error);
     throw new Error("Failed to fetch latest products");
-  } finally {
-    await prisma.$disconnect();
+  }
+}
+
+
+// Get single product by it's slug
+export async function getProductBySlug(slug: string) {
+  try {
+    if (!slug) throw new Error("Slug is required");
+
+    const data = await prisma.product.findFirst({
+      where: { slug },
+    });
+
+    return data ? convertToPlainObject(data) : null;
+  } catch (error: any) {
+    console.error("Error fetching product by slug:", error.message);
+    throw new Error("Failed to fetch product by slug");
   }
 }
