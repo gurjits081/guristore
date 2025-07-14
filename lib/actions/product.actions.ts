@@ -2,6 +2,7 @@
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 import { prisma } from "@/db/prisma";
 import { convertToPlainObject } from "../utils";
+import { Product } from "@/types";
 
 // Get latest products
 export async function getLatestProducts() {
@@ -11,7 +12,19 @@ export async function getLatestProducts() {
       orderBy: { createdAt: "desc" },
     });
 
-    return convertToPlainObject(data);
+    const plainObject = convertToPlainObject(data);
+    return plainObject.map((p) => ({
+      name: p.name,
+      slug: p.slug,
+      category: p.category,
+      brand: p.brand,
+      description: p.description,
+      stock: p.stock,
+      images: p.images,
+      isFeatured: p.isFeatured,
+      banner: p.banner,
+      price: p.price.toString(), // 👈 converted
+    })) as Product[];
   } catch (error) {
     console.log("Error fetching latest products:", error);
     throw new Error("Failed to fetch latest products");
